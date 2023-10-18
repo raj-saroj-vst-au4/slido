@@ -14,6 +14,7 @@ npm install
 2. Create a .env file in the root dir
 3. Signup for Clerk and copy paste in the empty following variables in .env
 
+```
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
@@ -21,6 +22,7 @@ NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
 NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
 NEXT_PUBLIC_BACKEND_URL=http://localhost:3002/
+```
 
 4. From the Clerk Dashboard, customize the session token to
 

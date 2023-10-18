@@ -31,7 +31,7 @@ const ModalJoinClass = ({ isOpen, onClose }: any) => {
     //pending also check for validity
     if (!classid) {
       toast({
-        title: "Class ID is required",
+        title: "Session ID is required",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -39,7 +39,7 @@ const ModalJoinClass = ({ isOpen, onClose }: any) => {
       setValidating(false);
     } else {
       toast({
-        title: "Valid classid, Joining class...",
+        title: "Valid classid, Joining session...",
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -59,7 +59,7 @@ const ModalJoinClass = ({ isOpen, onClose }: any) => {
     >
       <ModalOverlay bg="none" backdropFilter="auto" backdropBlur="5px" />
       <ModalContent>
-        <ModalHeader>Join Classroom</ModalHeader>
+        <ModalHeader>Join Session</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Input

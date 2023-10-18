@@ -12,7 +12,7 @@ import ActionMenu from "@/app/Components/ActionMenu";
 import MeetingControls from "@/app/Components/MeetingControls";
 import QuestionCard from "@/app/Components/QuestionCard";
 
-export default function host() {
+export default function Host() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [liveRooms, setLiveRooms] = useState(null);
   const { classid } = useParams();

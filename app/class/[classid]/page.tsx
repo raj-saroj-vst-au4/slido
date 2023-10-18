@@ -10,7 +10,7 @@ import { useParams } from "next/navigation";
 import { useAuth, useSession } from "@clerk/nextjs";
 import ActionMenu from "@/app/Components/ActionMenu";
 
-export default function classroom() {
+export default function Class() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [liveRooms, setLiveRooms] = useState(null);
   const { classid } = useParams();

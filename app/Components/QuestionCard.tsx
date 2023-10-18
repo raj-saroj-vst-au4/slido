@@ -9,15 +9,7 @@ const QuestionCard = () => {
         <figure className="max-w-screen-md mx-auto">
           <blockquote>
             <div className="text-2xl font-medium text-white">
-              "Flowbite is just awesome. It contains tons of predesigned
-              components and pages starting from login screen to complex
-              dashboard. Perfect choice for your next SaaS complex dashboard.
-              Perfect choice for your next SaaS application." just awesome. It
-              contains tons of predesigned components and pages starting from
-              login screen to complex dashboard. Perfect choice for your next
-              SaaS application.""Flowbite is just awesome. It contains tons of
-              predesigned components and pages starting from login screen to
-              complex dashboard. Perfect choice for your next SaaS application."
+              Questions will come here
             </div>
           </blockquote>
           <figcaption className="flex items-center justify-center mt-6 space-x-3">

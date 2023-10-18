@@ -34,7 +34,7 @@ const ActionMenu = () => {
           <MenuDivider />
           <MenuGroup title="Participate">
             <MenuItem value="all">
-              <Link href="/classrooms">All Sessions</Link>
+              <Link href="/sessions">All Sessions</Link>
             </MenuItem>
             <MenuItem onClick={onOpen}>Join a Session</MenuItem>
           </MenuGroup>

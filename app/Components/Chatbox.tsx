@@ -128,20 +128,23 @@ const Chatbox = ({ socket, classid, session, variant }: ChatboxProps) => {
   }, [socket]);
 
   const handleMessageSend = (firstName: string) => {
-    if (myText.length > 8 && textRecords.some((msg) => msg.text == myText)) {
-      toast({
-        title: "Spam Alert",
-        description: `Do not Spam ${firstName}, Incident Reported & Msg Discarded`,
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } else {
-      socket.emit("sendMsg", {
-        text: myText,
-        classid,
-      });
+    if (myText.length > 8) {
+      if (textRecords.some((msg) => msg.text == myText)) {
+        toast({
+          title: "Spam Alert",
+          description: `Do not Spam ${firstName}, Incident Reported & Msg Discarded`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        return setMyText("");
+      }
     }
+
+    socket.emit("sendMsg", {
+      text: myText,
+      classid,
+    });
 
     setMyText("");
   };

@@ -13,7 +13,21 @@ import {
 } from "@chakra-ui/react";
 import { BsArrowUpRight, BsHeartFill, BsHeart } from "react-icons/bs";
 
-export default function ClassCard() {
+interface classcardProps {
+  creatorname: string;
+  id: string;
+  title: string;
+  tag: string;
+  desc: string;
+}
+
+export default function ClassCard({
+  creatorname,
+  id,
+  title,
+  tag,
+  desc,
+}: classcardProps) {
   const [liked, setLiked] = useState(false);
 
   return (
@@ -51,15 +65,14 @@ export default function ClassCard() {
             mb={2}
           >
             <Text fontSize={"xs"} fontWeight="medium">
-              React
+              {title}
             </Text>
           </Box>
           <Heading color={"black"} fontSize={"2xl"} noOfLines={1}>
-            React v18.0
+            {title}
           </Heading>
           <Text color={"gray.500"} noOfLines={2}>
-            In this post, we will give an overview of what is new in React 18,
-            and what it means for the future.
+            {desc}
           </Text>
         </Box>
         <HStack borderTop={"1px"} color="black">

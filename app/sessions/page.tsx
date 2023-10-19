@@ -1,10 +1,19 @@
 "use client";
 import ActionMenu from "../Components/ActionMenu";
 import ClassCard from "../Components/ClassCard";
-import { Divider, HStack, Tag, TagLabel, TagLeftIcon } from "@chakra-ui/react";
+import {
+  CircularProgress,
+  Divider,
+  HStack,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
+} from "@chakra-ui/react";
 import { BsHouseAdd } from "react-icons/bs";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useSession } from "@clerk/nextjs";
 
 const categories = [
   { title: "TRPC", icon: BsHouseAdd },
@@ -15,13 +24,40 @@ const categories = [
   { title: "MONGODB", icon: BsHouseAdd },
 ];
 
+type rooms = {
+  email: string;
+  desc: string;
+  image: string;
+  name: string;
+  title: string;
+  tag: string;
+  type: string;
+  _id: string;
+};
+
 const ClassroomsPage = () => {
+  const { session } = useSession();
+  const [rooms, setRooms] = useState<rooms[]>([]);
+
+  useEffect(() => {
+    axios
+      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}fetchmysessions`, {
+        mailid: session?.publicUserData,
+      })
+      .then((result) => {
+        setRooms(result.data);
+        return console.log(result.data);
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  }, []);
   return (
     <>
       <ActionMenu />
       <section className="flex justify-between">
         <h2 className="text-white text-2xl ml-4 mb-3 font-bold">
-          Upcoming Sessions
+          Upcoming Open Sessions
         </h2>
         <HStack spacing={4}>
           <h5 className="text-white font-bold">Categories :</h5>
@@ -42,27 +78,52 @@ const ClassroomsPage = () => {
       </section>
 
       <Divider />
-      <section className="flex overflow-x-auto">
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-        <ClassCard />
-      </section>
+      {rooms ? (
+        <section className="flex overflow-x-auto">
+          {rooms
+            .filter((s) => s.type === "open")
+            .map((record) => (
+              <ClassCard
+                creatorname={record.name}
+                key={record._id}
+                title={record.title}
+                tag={record.tag}
+                desc={record.desc}
+                id={record._id}
+              />
+            ))}
+        </section>
+      ) : (
+        <h3 className="text-white text-xl font-bold">
+          No Open Sessions Found...
+        </h3>
+      )}
+
       <Divider />
       <h2 className="text-white text-2xl ml-4 mt-4 font-bold">
         Subscibed Sessions
       </h2>
       <Divider />
-      <section className="flex overflow-x-auto">
-        <ClassCard />
-        <ClassCard />
-      </section>
+      {rooms ? (
+        <section className="flex overflow-x-auto">
+          {rooms
+            .filter((s) => s.type != "open")
+            .map((record) => (
+              <ClassCard
+                creatorname={record.name}
+                key={record._id}
+                title={record.title}
+                tag={record.tag}
+                desc={record.desc}
+                id={record._id}
+              />
+            ))}
+        </section>
+      ) : (
+        <h3 className="text-white text-xl font-bold">
+          No Open Sessions Found...
+        </h3>
+      )}
     </>
   );
 };

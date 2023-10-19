@@ -19,11 +19,11 @@ export default function Host() {
   const { userId, getToken } = useAuth();
   const { session } = useSession();
   const toast = useToast();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = await getToken();
-
         setSocket(
           io(`${process.env.NEXT_PUBLIC_BACKEND_URL}`, {
             auth: {
@@ -32,7 +32,7 @@ export default function Host() {
             },
           })
         );
-        return () => socket?.disconnect;
+        // return () => socket?.disconnect;
       } catch (e) {
         console.log("error fetching token", e);
       }

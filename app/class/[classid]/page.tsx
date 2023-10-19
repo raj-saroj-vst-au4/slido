@@ -21,8 +21,7 @@ export default function Class() {
     const fetchData = async () => {
       try {
         const token = await getToken();
-
-        setSocket(
+        return setSocket(
           io(`${process.env.NEXT_PUBLIC_BACKEND_URL}`, {
             auth: {
               userId,
@@ -30,7 +29,7 @@ export default function Class() {
             },
           })
         );
-        return () => socket?.disconnect;
+        // return () => socket?.disconnect;
       } catch (e) {
         console.log("error fetching token", e);
       }

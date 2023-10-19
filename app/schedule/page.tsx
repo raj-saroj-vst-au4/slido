@@ -25,6 +25,8 @@ import {
 import React, { useState } from "react";
 import { BsCaretLeftFill, BsCaretRightFill } from "react-icons/bs";
 import axios from "axios";
+import { useSession } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const steps = [
   { title: "First", description: "About Session" },
@@ -34,12 +36,16 @@ const steps = [
 
 const Schedule = () => {
   const toast = useToast();
+  const { session } = useSession();
   const [title, setTitle] = useState("");
   const [pin, setPin] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [desc, setDesc] = useState("");
+  const [tag, setTag] = useState("");
   const [participants, setParticipants] = useState("");
   const [customList, setCustomList] = useState("");
+  const router = useRouter();
   const { activeStep, setActiveStep } = useSteps({
     index: 1,
     count: steps.length,
@@ -54,9 +60,32 @@ const Schedule = () => {
         time,
         participants,
         customList,
+        user: session?.publicUserData,
+        tag,
+        desc,
       })
       .then((result) => {
         console.log(result);
+        toast({
+          title: "Session Created, Redirecting...",
+          description: `${result.data}`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        setTimeout(() => {
+          router.push(`/sessions`);
+        }, 3200);
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Invalid Input",
+          description: `${error.response.data}`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       });
   };
   return (
@@ -131,6 +160,20 @@ const Schedule = () => {
                 <Input type="time" onChange={(e) => setTime(e.target.value)} />
               </HStack>
             </div>
+            <br />
+            <h3 className="text-2xl font-bold text-center mb-3">
+              Short Category Tag
+            </h3>
+            <div className="text-center">
+              <Input
+                variant="filled"
+                placeholder="ex:- TRPC"
+                width={40}
+                value={tag}
+                onChange={(e) => setTag(e.target.value)}
+              />
+            </div>
+
             <div className="flex justify-around mt-8 items-center">
               <Button
                 leftIcon={<BsCaretLeftFill />}
@@ -175,21 +218,6 @@ const Schedule = () => {
                 Enter a custom list
               </option>
             </Select>
-            {/* <section
-              className={participants === "selected" ? "block" : "hidden"}
-            >
-              <h3 className="m-5 font-semibold">Select from List : </h3>
-              <List spacing={2} className="max-h-60 overflow-auto">
-                <ListItem>
-                  <ListIcon as={BsCheckCircle} color="blue.500" />
-                  Lorem, ipsum
-                </ListItem>
-                <ListItem>
-                  <ListIcon as={BsCheckCircle} color="blue.500" />
-                  Assumenda, quia
-                </ListItem>
-              </List>
-            </section> */}
             <div className={participants === "custom" ? "block" : "hidden"}>
               <Input
                 className="mt-6 flex w-80"
@@ -199,6 +227,17 @@ const Schedule = () => {
                 onChange={(e) => setCustomList(e.target.value)}
               />
             </div>
+            <br />
+            <h3 className="text-2xl font-bold text-center mb-3">
+              Session Description
+            </h3>
+            <Input
+              variant="filled"
+              placeholder="ex:- Live Q&A Session on Javascript Hoisting"
+              width={80}
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+            />
 
             <div className="flex justify-around mt-8 items-center">
               <Button

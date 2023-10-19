@@ -19,6 +19,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
+        <head>
+          <link rel="icon" href="/querfyflowicon.png" />
+        </head>
         <body className={inter.className}>
           <Providers>
             <div className="h-screen bg-slate-800 p-5">{children}</div>

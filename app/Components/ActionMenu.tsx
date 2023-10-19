@@ -6,8 +6,6 @@ import {
   MenuItem,
   MenuDivider,
   Button,
-  Center,
-  Divider,
   useDisclosure,
 } from "@chakra-ui/react";
 import { UserButton } from "@clerk/nextjs";

@@ -191,11 +191,11 @@ const Chatbox = ({
     }
   });
 
-  if (variant == "host" && setQRecords) {
-    useEffect(() => {
+  useEffect(() => {
+    if (variant == "host" && setQRecords) {
       setQRecords(textRecords.filter((msg) => msg.text.length > 8));
-    }, [textRecords, setQRecords]);
-  }
+    }
+  }, [textRecords, setQRecords]);
 
   return (
     <div className="flex flex-col grow bg-stone-50 shadow-xl rounded-lg overflow-hidden h-full">

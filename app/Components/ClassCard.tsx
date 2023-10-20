@@ -10,6 +10,9 @@ import {
   useColorModeValue,
   HStack,
   Image,
+  Stack,
+  CardBody,
+  Card,
 } from "@chakra-ui/react";
 import { BsArrowUpRight, BsHeartFill, BsHeart } from "react-icons/bs";
 import { useRouter } from "next/navigation";
@@ -50,14 +53,28 @@ export default function ClassCard({
         borderColor="black"
         boxShadow={useColorModeValue("6px 6px 0 black", "6px 6px 0 cyan")}
       >
-        <Box h={"120px"} p={"8px"} borderBottom={"1px"} borderColor="black">
-          <Image
-            borderRadius="full"
-            boxSize="80px"
-            src={creatorimg}
-            alt={creatorname}
-          />
-        </Box>
+        <Card
+          direction={{ base: "column", sm: "row" }}
+          overflow="hidden"
+          variant="outline"
+          p={2}
+          justifyContent={"center"}
+        >
+          <Center>
+            <Image
+              borderRadius="full"
+              boxSize="80px"
+              src={creatorimg}
+              alt={creatorname}
+            />
+            <Stack>
+              <CardBody>
+                <Heading size="md">{creatorname}</Heading>
+                <Text py="1">Host</Text>
+              </CardBody>
+            </Stack>
+          </Center>
+        </Card>
         <Box p={2}>
           <Box
             bg="black"

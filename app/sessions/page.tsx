@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { BsHouseAdd } from "react-icons/bs";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useSession } from "@clerk/nextjs";
 
@@ -37,21 +37,30 @@ type rooms = {
 
 const ClassroomsPage = () => {
   const { session } = useSession();
-  const [rooms, setRooms] = useState<rooms[]>([]);
+  const [openRooms, setOpenRooms] = useState<rooms[]>([]);
+  const [customRooms, setCustomRooms] = useState<rooms[]>([]);
+
+  const dataAlreadyFetched = useRef(false);
 
   useEffect(() => {
-    if (session) {
+    if (session && !dataAlreadyFetched.current) {
       axios
         .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}fetchmySessions`, {
           mailid: session.publicUserData.identifier,
         })
         .then((result) => {
-          setRooms(result.data);
+          setOpenRooms([
+            ...result.data.filter((s: rooms) => s.type === "open"),
+          ]);
+          setCustomRooms([
+            ...result.data.filter((s: rooms) => s.type === "custom"),
+          ]);
           return console.log(result.data);
         })
         .catch((err) => {
           return console.log(err);
         });
+      dataAlreadyFetched.current = true;
     }
   }, [session]);
   return (
@@ -80,24 +89,22 @@ const ClassroomsPage = () => {
       </section>
 
       <Divider />
-      {rooms ? (
+      {openRooms.length ? (
         <section className="flex overflow-x-auto">
-          {rooms
-            .filter((s) => s.type === "open")
-            .map((record) => (
-              <ClassCard
-                creatorname={record.name}
-                key={record._id}
-                title={record.title}
-                tag={record.tag}
-                desc={record.desc}
-                id={record._id}
-                creatorimg={record.image}
-              />
-            ))}
+          {openRooms.map((record) => (
+            <ClassCard
+              creatorname={record.name}
+              key={record._id}
+              title={record.title}
+              tag={record.tag}
+              desc={record.desc}
+              id={record._id}
+              creatorimg={record.image}
+            />
+          ))}
         </section>
       ) : (
-        <h3 className="text-white text-xl font-bold">
+        <h3 className="text-white text-xl font-bold mt-5 mb-8">
           No Open Sessions Found...
         </h3>
       )}
@@ -107,25 +114,23 @@ const ClassroomsPage = () => {
         Subscibed Sessions
       </h2>
       <Divider />
-      {rooms ? (
+      {customRooms.length ? (
         <section className="flex overflow-x-auto">
-          {rooms
-            .filter((s) => s.type === "custom")
-            .map((record) => (
-              <ClassCard
-                creatorname={record.name}
-                key={record._id}
-                title={record.title}
-                tag={record.tag}
-                desc={record.desc}
-                id={record._id}
-                creatorimg={record.image}
-              />
-            ))}
+          {customRooms.map((record) => (
+            <ClassCard
+              creatorname={record.name}
+              key={record._id}
+              title={record.title}
+              tag={record.tag}
+              desc={record.desc}
+              id={record._id}
+              creatorimg={record.image}
+            />
+          ))}
         </section>
       ) : (
-        <h3 className="text-white text-xl font-bold">
-          No Open Sessions Found...
+        <h3 className="text-white text-xl font-bold mt-5">
+          You donot have any invited or subscribed sessions yet...
         </h3>
       )}
     </>

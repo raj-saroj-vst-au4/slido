@@ -12,6 +12,19 @@ import ActionMenu from "@/app/Components/ActionMenu";
 import MeetingControls from "@/app/Components/MeetingControls";
 import QuestionCard from "@/app/Components/QuestionCard";
 
+interface questions {
+  from: {
+    ufname: string;
+    uimage: string;
+    umailid: string;
+  };
+  text: string;
+  time: Date;
+  msgid: string;
+  upvotes: Array<{ sm: string; si: string }>;
+  answered: Boolean;
+}
+
 export default function Host() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [liveRooms, setLiveRooms] = useState(null);
@@ -19,6 +32,7 @@ export default function Host() {
   const { userId, getToken } = useAuth();
   const { session } = useSession();
   const toast = useToast();
+  const [qrecords, setQRecords] = useState<questions[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +90,7 @@ export default function Host() {
       {socket ? (
         <div className="flex flex-col justify-around items-center">
           <div className="w-[35vw]">
-            <QuestionCard />
+            <QuestionCard qrecords={qrecords} />
           </div>
           <section className="hidden xl:block hover:shadow-2xl hover:rounded-full">
             <ChoirView />
@@ -97,6 +111,7 @@ export default function Host() {
               socket={socket}
               classid={classid}
               session={session}
+              setQRecords={setQRecords}
               variant="host"
             />
           </div>

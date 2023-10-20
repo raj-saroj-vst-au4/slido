@@ -16,7 +16,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { FaLevelUpAlt, FaRegFrownOpen } from "react-icons/fa";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, Dispatch, SetStateAction } from "react";
 
 interface Socket {
   on(event: string, callback: (data: any) => void): void;
@@ -41,6 +41,7 @@ interface ChatboxProps {
       }
     | any;
   variant: "host" | "participant";
+  setQRecords?: Dispatch<SetStateAction<ChatText[]>>;
 }
 
 interface ChatText {
@@ -53,6 +54,7 @@ interface ChatText {
   time: Date;
   msgid: string;
   upvotes: Array<{ sm: string; si: string }>;
+  answered: Boolean;
 }
 
 interface LiveList {
@@ -60,7 +62,13 @@ interface LiveList {
   uimage: string;
 }
 
-const Chatbox = ({ socket, classid, session, variant }: ChatboxProps) => {
+const Chatbox = ({
+  socket,
+  classid,
+  session,
+  variant,
+  setQRecords,
+}: ChatboxProps) => {
   const [myText, setMyText] = useState<any>("");
   const [textRecords, setTextRecords] = useState<ChatText[]>([]);
   const [liveList, setLiveList] = useState<LiveList[]>([]);
@@ -86,6 +94,7 @@ const Chatbox = ({ socket, classid, session, variant }: ChatboxProps) => {
           time: msg.time,
           msgid: msg.msgid,
           upvotes: msg.upvotes,
+          answered: msg.answered,
         },
       ]);
     };
@@ -181,6 +190,12 @@ const Chatbox = ({ socket, classid, session, variant }: ChatboxProps) => {
       });
     }
   });
+
+  if (variant == "host" && setQRecords) {
+    useEffect(() => {
+      setQRecords(textRecords.filter((msg) => msg.text.length > 8));
+    }, [textRecords]);
+  }
 
   return (
     <div className="flex flex-col grow bg-stone-50 shadow-xl rounded-lg overflow-hidden h-full">

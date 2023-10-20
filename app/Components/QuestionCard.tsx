@@ -1,5 +1,4 @@
 import { Avatar, AvatarGroup, Button, Image } from "@chakra-ui/react";
-import axios from "axios";
 import { useState } from "react";
 import { FcNext, FcPrevious } from "react-icons/fc";
 
@@ -17,15 +16,21 @@ interface questions {
 }
 
 interface questioncardProps {
+  socket: {
+    on(event: string, callback: (data: any) => void): void;
+    off(event: string): void;
+    emit(event: string, data: any): void;
+  };
   qrecords: questions[];
+  classid: string | string[];
 }
 
-const QuestionCard = ({ qrecords }: questioncardProps) => {
+const QuestionCard = ({ socket, qrecords, classid }: questioncardProps) => {
   const [currentQuestion, setCurrentQuestion] = useState<questions>();
   const [previousQuestions, setPreviousQuestions] = useState<questions[]>([]);
 
   const sortMessages = (msgList: questions[]) => {
-    return [...msgList].sort((a, b) => b.upvotes.length - a.upvotes.length);
+    return msgList.sort((a, b) => b.upvotes.length - a.upvotes.length);
   };
 
   const handleNextQuestion = () => {
@@ -34,15 +39,18 @@ const QuestionCard = ({ qrecords }: questioncardProps) => {
         return [...old, currentQuestion];
       });
     }
-    console.log(qrecords);
-    const sortedmsgs = sortMessages(qrecords);
-    const newQuestion = sortedmsgs.find((msg) => !msg.answered);
+    var sortedmsgs = sortMessages(qrecords);
+    var newQuestion = sortedmsgs.find((msg) => !msg.answered);
     if (newQuestion) {
       setCurrentQuestion(newQuestion);
+      return socket.emit("flagAnswered", {
+        ansmsgid: newQuestion.msgid,
+        classid,
+      });
     }
   };
   return (
-    <section className="bg-white dark:bg-gray-900 rounded-lg p-4">
+    <section className="bg-gray-900 rounded-lg p-4">
       <div className="max-w-screen-xl mx-auto text-center">
         <figure className="max-w-screen-md mx-auto">
           <blockquote>

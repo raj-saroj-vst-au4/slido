@@ -90,7 +90,11 @@ export default function Host() {
       {socket ? (
         <div className="flex flex-col justify-around items-center">
           <div className="w-[35vw]">
-            <QuestionCard qrecords={qrecords} />
+            <QuestionCard
+              socket={socket}
+              qrecords={qrecords}
+              classid={classid}
+            />
           </div>
           <section className="hidden xl:block hover:shadow-2xl hover:rounded-full">
             <ChoirView />

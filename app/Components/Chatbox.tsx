@@ -85,6 +85,13 @@ const Chatbox = ({
   };
 
   useEffect(() => {
+    if (variant == "host" && setQRecords) {
+      console.log("Updating Q records");
+      setQRecords([...textRecords.filter((msg) => msg.text.length > 8)]);
+    }
+  }, [textRecords, setQRecords]);
+
+  useEffect(() => {
     const handleRecMsg = (msg: ChatText) => {
       setTextRecords((prev) => [
         ...prev,
@@ -123,16 +130,29 @@ const Chatbox = ({
       });
     };
 
+    const handleSetAnswered = (ansmsgid: string) => {
+      console.log("recieved this as answered ", ansmsgid);
+      setTextRecords((prevtxts) => {
+        const msgindex = prevtxts.findIndex((msg) => msg.msgid === ansmsgid);
+        if (!prevtxts[msgindex].answered) {
+          prevtxts[msgindex].answered = true;
+        }
+        return [...prevtxts];
+      });
+    };
+
     socket.on("livelist", handleliveList);
     socket.on("recMsg", handleRecMsg);
     socket.on("intmsgslist", handleMessagesList);
     socket.on("upvotedmsg", handleUpvotedMsg);
+    socket.on("setAnswered", handleSetAnswered);
 
     return () => {
       socket.off("recMsg");
       socket.off("livelist");
       socket.off("intmsgslist");
       socket.off("upvotedmsg");
+      socket.off("setAnswered");
     };
   }, [socket]);
 
@@ -190,12 +210,6 @@ const Chatbox = ({
       });
     }
   });
-
-  useEffect(() => {
-    if (variant == "host" && setQRecords) {
-      setQRecords(textRecords.filter((msg) => msg.text.length > 8));
-    }
-  }, [textRecords, setQRecords]);
 
   return (
     <div className="flex flex-col grow bg-stone-50 shadow-xl rounded-lg overflow-hidden h-full">

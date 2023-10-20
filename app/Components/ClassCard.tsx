@@ -5,20 +5,21 @@ import {
   Box,
   Heading,
   Text,
-  Img,
   Flex,
   Center,
   useColorModeValue,
   HStack,
+  Image,
 } from "@chakra-ui/react";
 import { BsArrowUpRight, BsHeartFill, BsHeart } from "react-icons/bs";
-
+import { useRouter } from "next/navigation";
 interface classcardProps {
   creatorname: string;
   id: string;
   title: string;
   tag: string;
   desc: string;
+  creatorimg: string;
 }
 
 export default function ClassCard({
@@ -27,8 +28,14 @@ export default function ClassCard({
   title,
   tag,
   desc,
+  creatorimg,
 }: classcardProps) {
   const [liked, setLiked] = useState(false);
+  const router = useRouter();
+
+  const handleJoin = (url: string) => {
+    router.push(`/class/${url}`);
+  };
 
   return (
     <Center py={2}>
@@ -43,16 +50,12 @@ export default function ClassCard({
         borderColor="black"
         boxShadow={useColorModeValue("6px 6px 0 black", "6px 6px 0 cyan")}
       >
-        <Box h={"120px"} borderBottom={"1px"} borderColor="black">
-          <Img
-            src={
-              "https://images.unsplash.com/photo-1542435503-956c469947f6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80"
-            }
-            roundedTop={"sm"}
-            objectFit="cover"
-            h="full"
-            w="full"
-            alt={"Blog Image"}
+        <Box h={"120px"} p={"8px"} borderBottom={"1px"} borderColor="black">
+          <Image
+            borderRadius="full"
+            boxSize="80px"
+            src={creatorimg}
+            alt={creatorname}
           />
         </Box>
         <Box p={2}>
@@ -65,14 +68,14 @@ export default function ClassCard({
             mb={2}
           >
             <Text fontSize={"xs"} fontWeight="medium">
-              {title}
+              {tag || "Generic"}
             </Text>
           </Box>
           <Heading color={"black"} fontSize={"2xl"} noOfLines={1}>
             {title}
           </Heading>
           <Text color={"gray.500"} noOfLines={2}>
-            {desc}
+            {desc || "Live Q&A"}
           </Text>
         </Box>
         <HStack borderTop={"1px"} color="black">
@@ -83,6 +86,7 @@ export default function ClassCard({
             roundedBottom={"sm"}
             cursor={"pointer"}
             w="full"
+            onClick={() => handleJoin(id)}
           >
             <Text fontSize={"md"} fontWeight={"semibold"}>
               Join Session

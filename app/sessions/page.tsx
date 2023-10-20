@@ -40,18 +40,20 @@ const ClassroomsPage = () => {
   const [rooms, setRooms] = useState<rooms[]>([]);
 
   useEffect(() => {
-    axios
-      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}fetchmysessions`, {
-        mailid: session?.publicUserData,
-      })
-      .then((result) => {
-        setRooms(result.data);
-        return console.log(result.data);
-      })
-      .catch((err) => {
-        return console.log(err);
-      });
-  }, []);
+    if (session) {
+      axios
+        .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}fetchmySessions`, {
+          mailid: session.publicUserData.identifier,
+        })
+        .then((result) => {
+          setRooms(result.data);
+          return console.log(result.data);
+        })
+        .catch((err) => {
+          return console.log(err);
+        });
+    }
+  }, [session]);
   return (
     <>
       <ActionMenu />
@@ -90,6 +92,7 @@ const ClassroomsPage = () => {
                 tag={record.tag}
                 desc={record.desc}
                 id={record._id}
+                creatorimg={record.image}
               />
             ))}
         </section>
@@ -107,7 +110,7 @@ const ClassroomsPage = () => {
       {rooms ? (
         <section className="flex overflow-x-auto">
           {rooms
-            .filter((s) => s.type != "open")
+            .filter((s) => s.type === "custom")
             .map((record) => (
               <ClassCard
                 creatorname={record.name}
@@ -116,6 +119,7 @@ const ClassroomsPage = () => {
                 tag={record.tag}
                 desc={record.desc}
                 id={record._id}
+                creatorimg={record.image}
               />
             ))}
         </section>

@@ -194,7 +194,7 @@ const Chatbox = ({
   if (variant == "host" && setQRecords) {
     useEffect(() => {
       setQRecords(textRecords.filter((msg) => msg.text.length > 8));
-    }, [textRecords]);
+    }, [textRecords, setQRecords]);
   }
 
   return (

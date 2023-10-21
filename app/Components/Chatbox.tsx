@@ -131,7 +131,6 @@ const Chatbox = ({
     };
 
     const handleSetAnswered = (ansmsgid: string) => {
-      console.log("recieved this as answered ", ansmsgid);
       setTextRecords((prevtxts) => {
         const msgindex = prevtxts.findIndex((msg) => msg.msgid === ansmsgid);
         if (!prevtxts[msgindex].answered) {

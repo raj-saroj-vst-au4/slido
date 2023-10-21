@@ -54,7 +54,7 @@ interface ChatText {
   time: Date;
   msgid: string;
   upvotes: Array<{ sm: string; si: string }>;
-  answered: Boolean;
+  answered: number;
 }
 
 interface LiveList {
@@ -84,12 +84,24 @@ const Chatbox = ({
     return result;
   };
 
-  useEffect(() => {
-    if (variant == "host" && setQRecords) {
-      console.log("Updating Q records");
-      setQRecords([...textRecords.filter((msg) => msg.text.length > 8)]);
+  const handleSetQrecords = () => {
+    if (setQRecords) {
+      setQRecords([
+        ...textRecords.filter(
+          (msg) =>
+            msg.text.length > 8 &&
+            msg.from.umailid != session.user.primaryEmailAddress.emailAddress
+        ),
+      ]);
     }
-  }, [textRecords, setQRecords]);
+  };
+
+  useEffect(() => {
+    if (variant == "host") {
+      console.log("Updating Q records");
+      handleSetQrecords();
+    }
+  }, [textRecords]);
 
   useEffect(() => {
     const handleRecMsg = (msg: ChatText) => {
@@ -130,11 +142,17 @@ const Chatbox = ({
       });
     };
 
-    const handleSetAnswered = (ansmsgid: string) => {
+    const handleSetAnswered = ({
+      ansmsgid,
+      ansindex,
+    }: {
+      ansmsgid: String;
+      ansindex: number;
+    }) => {
       setTextRecords((prevtxts) => {
         const msgindex = prevtxts.findIndex((msg) => msg.msgid === ansmsgid);
         if (!prevtxts[msgindex].answered) {
-          prevtxts[msgindex].answered = true;
+          prevtxts[msgindex].answered = ansindex;
         }
         return [...prevtxts];
       });

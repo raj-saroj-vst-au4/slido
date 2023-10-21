@@ -22,7 +22,7 @@ interface questions {
   time: Date;
   msgid: string;
   upvotes: Array<{ sm: string; si: string }>;
-  answered: Boolean;
+  answered: number;
 }
 
 export default function Host() {

@@ -1,5 +1,5 @@
 import { Avatar, AvatarGroup, Button, Image } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FcNext, FcPrevious } from "react-icons/fc";
 
 interface questions {
@@ -12,7 +12,7 @@ interface questions {
   time: Date;
   msgid: string;
   upvotes: Array<{ sm: string; si: string }>;
-  answered: Boolean;
+  answered: number;
 }
 
 interface questioncardProps {
@@ -27,28 +27,75 @@ interface questioncardProps {
 
 const QuestionCard = ({ socket, qrecords, classid }: questioncardProps) => {
   const [currentQuestion, setCurrentQuestion] = useState<questions>();
-  const [previousQuestions, setPreviousQuestions] = useState<questions[]>([]);
+  const [answeredQuestions, setAnsweredQuestions] = useState<questions[]>([]);
+  const [qCounter, setQCounter] = useState<number>(1);
+  const isOldRecordsSet = useRef(false);
 
-  const sortMessages = (msgList: questions[]) => {
+  const sortAnsMessages = (msgslist: questions[]) => {
+    const sortedPrevAnswered = msgslist
+      .filter((q) => q.answered)
+      .sort((a, b) => b.answered - a.answered);
+    if (sortedPrevAnswered.length > 0) {
+      setAnsweredQuestions(sortedPrevAnswered);
+      setQCounter(sortedPrevAnswered[0].answered);
+    }
+  };
+
+  useEffect(() => {
+    if (qrecords.length > 0 && !isOldRecordsSet.current) {
+      sortAnsMessages(qrecords);
+      isOldRecordsSet.current = true;
+    }
+  }, [qrecords]);
+
+  const sortUpvotedMessages = (msgList: questions[]) => {
     return msgList.sort((a, b) => b.upvotes.length - a.upvotes.length);
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestion) {
-      setPreviousQuestions((old) => {
-        return [...old, currentQuestion];
-      });
-    }
-    var sortedmsgs = sortMessages(qrecords);
-    var newQuestion = sortedmsgs.find((msg) => !msg.answered);
-    if (newQuestion) {
-      setCurrentQuestion(newQuestion);
-      return socket.emit("flagAnswered", {
-        ansmsgid: newQuestion.msgid,
-        classid,
-      });
+    if (qCounter < answeredQuestions.length) {
+      setCurrentQuestion(answeredQuestions[qCounter]);
+      setQCounter((prev) => prev + 1);
+    } else {
+      var sortedmsgs = sortUpvotedMessages(qrecords);
+      var newQuestion = sortedmsgs.find((msg) => !msg.answered);
+      if (newQuestion) {
+        setQCounter((prev) => prev + 1);
+        newQuestion.answered = qCounter;
+        setAnsweredQuestions([...answeredQuestions, newQuestion]);
+        setCurrentQuestion(newQuestion);
+        return socket.emit("flagAnswered", {
+          ansmsgid: newQuestion.msgid,
+          classid,
+          ansindex: qCounter,
+        });
+      } else {
+        return setCurrentQuestion({
+          from: {
+            ufname: "Team Queryflow",
+            uimage: "https://bit.ly/dan-abramov",
+            umailid: "system",
+          },
+          text: "Awaiting New questions",
+          time: new Date(1697873422454),
+          msgid: "none",
+          upvotes: [],
+          answered: 450000,
+        });
+      }
     }
   };
+
+  const handlePreviousQuestion = () => {
+    if (answeredQuestions) {
+      const previousIndex = qCounter - 1;
+      if (previousIndex >= 0 && answeredQuestions[previousIndex]) {
+        setCurrentQuestion(answeredQuestions[previousIndex]);
+        setQCounter(previousIndex);
+      }
+    }
+  };
+
   return (
     <section className="bg-gray-900 rounded-lg p-4">
       <div className="max-w-screen-xl mx-auto text-center">
@@ -60,7 +107,11 @@ const QuestionCard = ({ socket, qrecords, classid }: questioncardProps) => {
             </div>
           </blockquote>
           <div className="flex justify-between items-center">
-            <Button leftIcon={<FcPrevious />} variant="outline">
+            <Button
+              leftIcon={<FcPrevious />}
+              variant="outline"
+              onClick={handlePreviousQuestion}
+            >
               Previous
             </Button>
             <figcaption className="flex items-center justify-center mt-6 mb-4 space-x-3">

@@ -819,6 +819,7 @@ export default function Home() {
             fontWeight={600}
             fontSize={{ base: "3xl", sm: "4xl", md: "6xl" }}
             lineHeight={"110%"}
+            color={"orange.50"}
           >
             Q&A Made easy with{" "}
             <Text as={"span"} color={"orange.400"}>

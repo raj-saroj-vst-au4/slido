@@ -76,7 +76,7 @@ export default function Host() {
         .catch((e) => {
           console.log(e);
           toast({
-            title: `${e}`,
+            title: `Invalid/expired URL or Host Mismatch`,
             description: "Incident has been reported, redirecting",
             status: "error",
             duration: 3000,

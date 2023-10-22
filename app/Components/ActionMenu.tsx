@@ -23,7 +23,7 @@ const ActionMenu = () => {
         <MenuList minWidth="240px">
           <MenuGroup defaultValue="asc" title="Conduct">
             <MenuItem value="asc">
-              <Link href="/classrooms">Start a New Session</Link>
+              <Link href="/startnew">Start a New Session</Link>
             </MenuItem>
             <MenuItem value="desc">
               <Link href="/schedule">Schedule a New Session</Link>

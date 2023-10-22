@@ -98,7 +98,6 @@ const Chatbox = ({
 
   useEffect(() => {
     if (variant == "host") {
-      console.log("Updating Q records");
       handleSetQrecords();
     }
   }, [textRecords]);

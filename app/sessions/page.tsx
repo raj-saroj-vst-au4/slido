@@ -55,7 +55,6 @@ const ClassroomsPage = () => {
           setCustomRooms([
             ...result.data.filter((s: rooms) => s.type === "custom"),
           ]);
-          return console.log(result.data);
         })
         .catch((err) => {
           return console.log(err);

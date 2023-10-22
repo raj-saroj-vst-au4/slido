@@ -52,12 +52,17 @@ const Schedule = () => {
   });
 
   const handleCreateSession = () => {
+    const combinedDateTime = new Date(date);
+
+    const [hours, minutes] = time.split(":");
+
+    combinedDateTime.setHours(parseInt(hours, 10));
+    combinedDateTime.setMinutes(parseInt(minutes, 10));
     axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}createSession`, {
         title,
         pin,
-        date,
-        time,
+        dateTime: combinedDateTime,
         participants,
         customList,
         user: session?.publicUserData,
@@ -65,10 +70,9 @@ const Schedule = () => {
         desc,
       })
       .then((result) => {
-        console.log(result);
         toast({
           title: "Session Created, Redirecting...",
-          description: `${result.data}`,
+          description: `Eagerly waiting for ${result.data.title}`,
           status: "success",
           duration: 3000,
           isClosable: true,

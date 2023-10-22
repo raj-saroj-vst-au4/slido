@@ -1,0 +1,3 @@
+check if class exists for participants
+livelist fix
+check if host and show button to switch to host

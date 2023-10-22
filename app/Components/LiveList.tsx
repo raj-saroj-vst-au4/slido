@@ -12,7 +12,7 @@ import {
 
 interface LiveListProps {
   classid: string | string[];
-  liveRooms: [{ key: string }] | null;
+  liveRooms: [{ id: string; name: string; dp: string; title: string }] | null;
 }
 
 const LiveList = ({ classid, liveRooms }: LiveListProps) => {
@@ -24,17 +24,17 @@ const LiveList = ({ classid, liveRooms }: LiveListProps) => {
             liveRooms.map((result, index) => {
               return (
                 <Flex key={index}>
-                  <Avatar src="https://bit.ly/sage-adebayo" />
+                  <Avatar src={result.dp} />
                   <Box ml="3">
                     <Text fontWeight="bold">
-                      Harkirat Singh
-                      {result.key != classid && (
+                      {result.name}
+                      {result.id != classid && (
                         <Badge ml="1" colorScheme="green">
                           Join
                         </Badge>
                       )}
                     </Text>
-                    <Text fontSize="sm">{result.key}</Text>
+                    <Text fontSize="sm">{result.title}</Text>
                   </Box>
                 </Flex>
               );

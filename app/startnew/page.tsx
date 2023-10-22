@@ -67,7 +67,7 @@ function StartSessModal() {
             <h2 className="text-4xl font-bold leadi lg:text-5xl">Lets talk!</h2>
             <div className="dark:text-gray-400">Start New Q&A Session</div>
           </div>
-          <img src="/start.svg" alt="" className="p-6 h-100" />
+          <img src="/start.svg" alt="image" className="p-6 h-100" />
         </div>
         <div className="space-y-6">
           <div>

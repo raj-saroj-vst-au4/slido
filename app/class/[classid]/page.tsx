@@ -6,17 +6,19 @@ import LiveList from "@/app/Components/LiveList";
 import { useToast, CircularProgress } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useAuth, useSession } from "@clerk/nextjs";
 import ActionMenu from "@/app/Components/ActionMenu";
 
 export default function Class() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [liveRooms, setLiveRooms] = useState(null);
+  const [status, setStatus] = useState(false);
   const { classid } = useParams();
   const { userId, getToken } = useAuth();
   const { session } = useSession();
   const toast = useToast();
+  const router = useRouter();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -48,17 +50,37 @@ export default function Class() {
         duration: 3000,
         isClosable: true,
       });
+      setStatus(true);
     });
 
     const handleliverooms = (data: any) => {
       setLiveRooms(data);
     };
 
+    const handleDisconnect = () => {
+      setStatus(false);
+    };
     socket?.on("liverooms", handleliverooms);
+    socket?.on("disconnect", handleDisconnect);
     return () => {
       socket?.off("liverooms");
+      socket?.off("disconnect");
     };
   }, [socket]);
+
+  const handleLeave = () => {
+    socket?.disconnect();
+    toast({
+      title: "Gracefully Leaving !",
+      description: `Redirection in process, please wait...`,
+      status: "info",
+      duration: 3000,
+      isClosable: true,
+    });
+    setTimeout(() => {
+      router.push("/sessions");
+    }, 3200);
+  };
   return (
     <main className="flex justify-between h-full">
       {socket && (
@@ -89,9 +111,35 @@ export default function Class() {
         {socket && (
           <div>
             <ActionMenu />
+            <div className="flex mt-8 justify-center items-center">
+              <h3 className="text-white">Live Status </h3>
+              <span className="relative flex h-3 w-3 ml-4">
+                {status ? (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-800 " />
+                ) : (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                )}
+              </span>
+            </div>
             <section className="mt-48 right-5 hover:shadow-2xl hover:rounded-full">
               <ChoirView />
             </section>
+
+            <div className="flex justify-between px-1 pt-2 border-2 border-indigo-500/75 rounded-3xl mt-12">
+              <button
+                type="button"
+                className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+              >
+                Video
+              </button>
+              <button
+                type="button"
+                className="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                onClick={handleLeave}
+              >
+                Leave
+              </button>
+            </div>
           </div>
         )}
       </div>

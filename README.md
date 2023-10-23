@@ -2,7 +2,7 @@
 
 This is a modern web application built using Next.js, Chakra UI, and Tailwind CSS, designed to facilitate live Q&A sessions in real-time. Whether you're hosting a virtual event, an online conference, or a classroom, this web app empowers you to engage with your audience seamlessly.
 
-[![Working Proof of concept](https://https://github.com/raj-saroj-vst-au4/slido/edit/main/thumbnail.jpg)](https://www.youtube.com/watch?v=xrUatkfl7Lk)
+[![Working Proof of concept](https://https://github.com/raj-saroj-vst-au4/slido/main/poc.jpg)](https://www.youtube.com/watch?v=xrUatkfl7Lk)
 
 ## Getting Started
 

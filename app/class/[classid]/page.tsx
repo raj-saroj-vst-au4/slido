@@ -9,11 +9,13 @@ import { io, Socket } from "socket.io-client";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth, useSession } from "@clerk/nextjs";
 import ActionMenu from "@/app/Components/ActionMenu";
+import axios from "axios";
 
 export default function Class() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [liveRooms, setLiveRooms] = useState(null);
   const [status, setStatus] = useState(false);
+  const [isHost, setIsHost] = useState(false);
   const { classid } = useParams();
   const { userId, getToken } = useAuth();
   const { session } = useSession();
@@ -36,20 +38,54 @@ export default function Class() {
         console.log("error fetching token", e);
       }
     };
+    const checkRoomExists = () => {
+      axios
+        .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}checkIsHost`, {
+          mailid: session?.user.primaryEmailAddress?.emailAddress,
+          classid,
+        })
+        .then((result) => {
+          if (result.status == 201) {
+            setIsHost(true);
+            return toast({
+              title: "Authenticated Host",
+              description: `Host session ${result.data.title}`,
+              status: "success",
+              duration: 3000,
+              isClosable: true,
+            });
+          } else if (result.status == 203) {
+            return toast({
+              title: "Authenticated User",
+              description: `Joined session ${result.data.title}`,
+              status: "success",
+              duration: 3000,
+              isClosable: true,
+            });
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+          toast({
+            title: "Invalid URL, Redirecting back...",
+            description: `The Session URL is either expired or invalid`,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+          setTimeout(() => {
+            router.push(`/sessions`);
+          }, 3200);
+        });
+    };
     fetchData();
+    checkRoomExists();
   }, []);
 
   useEffect(() => {
     socket?.on("me", (id: string) => {
       setSocket(socket);
       socket?.emit("joinclass", classid);
-      toast({
-        title: "Joined Session",
-        description: `Authenticated for session ${classid}`,
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
       setStatus(true);
     });
 
@@ -81,6 +117,10 @@ export default function Class() {
       router.push("/sessions");
     }, 3200);
   };
+
+  const handleSwitchHost = () => {
+    router.push(`/host/${classid}`);
+  };
   return (
     <main className="flex justify-between h-full">
       {socket && (
@@ -111,6 +151,7 @@ export default function Class() {
         {socket && (
           <div>
             <ActionMenu />
+
             <div className="flex mt-8 justify-center items-center">
               <h3 className="text-white">Live Status </h3>
               <span className="relative flex h-3 w-3 ml-4">
@@ -121,6 +162,18 @@ export default function Class() {
                 )}
               </span>
             </div>
+            <div className="flex flex-col justify-center">
+              {isHost && (
+                <button
+                  type="button"
+                  className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-8"
+                  onClick={handleSwitchHost}
+                >
+                  Switch to Host
+                </button>
+              )}
+            </div>
+
             <section className="mt-48 right-5 hover:shadow-2xl hover:rounded-full">
               <ChoirView />
             </section>

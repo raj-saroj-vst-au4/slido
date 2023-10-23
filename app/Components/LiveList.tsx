@@ -1,7 +1,7 @@
 import {
   Avatar,
-  Badge,
   Box,
+  Button,
   Card,
   CardBody,
   Flex,
@@ -9,6 +9,7 @@ import {
   StackDivider,
   Text,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 
 interface LiveListProps {
   classid: string | string[];
@@ -16,6 +17,12 @@ interface LiveListProps {
 }
 
 const LiveList = ({ classid, liveRooms }: LiveListProps) => {
+  const router = useRouter();
+
+  const handleJoinSession = (id: string) => {
+    router.push(`/class/${id}`);
+  };
+
   return (
     <Card>
       <CardBody>
@@ -29,9 +36,14 @@ const LiveList = ({ classid, liveRooms }: LiveListProps) => {
                     <Text fontWeight="bold">
                       {result.name}
                       {result.id != classid && (
-                        <Badge ml="1" colorScheme="green">
+                        <Button
+                          colorScheme="teal"
+                          size="xs"
+                          marginLeft={4}
+                          onClick={() => handleJoinSession(result.id)}
+                        >
                           Join
-                        </Badge>
+                        </Button>
                       )}
                     </Text>
                     <Text fontSize="sm">{result.title}</Text>

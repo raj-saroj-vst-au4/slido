@@ -65,13 +65,27 @@ export default function Host() {
           classid,
         })
         .then((res) => {
-          toast({
-            title: "Host Authenticated",
-            description: `Session started for ${res.data.title}`,
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-          });
+          if (res.status == 201) {
+            return toast({
+              title: "Host Authenticated",
+              description: `Session started for ${res.data.title}`,
+              status: "success",
+              duration: 3000,
+              isClosable: true,
+            });
+          } else {
+            toast({
+              title: `Host Mismatch`,
+              description: "Incident has been reported, redirecting",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+            setTimeout(() => {
+              router.push(`/sessions`);
+            }, 1000);
+            return console.log("reported");
+          }
         })
         .catch((e) => {
           console.log(e);
@@ -84,7 +98,7 @@ export default function Host() {
           });
           setTimeout(() => {
             router.push(`/sessions`);
-          }, 2000);
+          }, 1000);
         });
       isHostCheckedRef.current = true;
     }

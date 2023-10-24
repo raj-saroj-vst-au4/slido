@@ -132,14 +132,14 @@ export default function Host() {
 
       {socket ? (
         <div className="flex flex-col justify-around items-center">
-          <div className="w-[35vw]">
+          <div className="lg:w-[35vw]">
             <QuestionCard
               socket={socket}
               qrecords={qrecords}
               classid={classid}
             />
           </div>
-          <section className="hidden xl:block hover:shadow-2xl hover:rounded-full">
+          <section className="hover:shadow-2xl hover:rounded-full">
             <ChoirView />
           </section>
           <MeetingControls />
@@ -150,17 +150,21 @@ export default function Host() {
         </div>
       )}
 
-      <div className="flex flex-col col-span-1 text-gray-800 pb-4 h-[95vh] w-[25vw]">
+      <div className="flex flex-col col-span-1 text-gray-800 pb-4 lg:w-[25vw]">
         {socket && (
-          <div className="flex flex-col h-full">
-            <ActionMenu />
-            <Chatbox
-              socket={socket}
-              classid={classid}
-              session={session}
-              setQRecords={setQRecords}
-              variant="host"
-            />
+          <div className="hidden md:block flex flex-col ">
+            <div>
+              <ActionMenu />
+            </div>
+            <div className="h-[80vh]">
+              <Chatbox
+                socket={socket}
+                classid={classid}
+                session={session}
+                setQRecords={setQRecords}
+                variant="host"
+              />
+            </div>
           </div>
         )}
       </div>

@@ -131,11 +131,7 @@ const QuestionCard = ({ socket, qrecords, classid }: QuestionCardProps) => {
             </div>
           </blockquote>
           <div className="flex justify-between items-center">
-            <Button
-              leftIcon={<FcPrevious />}
-              variant="outline"
-              onClick={handlePreviousQuestion}
-            >
+            <Button leftIcon={<FcPrevious />} onClick={handlePreviousQuestion}>
               Previous
             </Button>
             <figcaption className="flex items-center justify-center mt-6 mb-4 space-x-3">
@@ -160,11 +156,7 @@ const QuestionCard = ({ socket, qrecords, classid }: QuestionCardProps) => {
                 </div>
               </div>
             </figcaption>
-            <Button
-              rightIcon={<FcNext />}
-              variant="outline"
-              onClick={handleNextQuestion}
-            >
+            <Button rightIcon={<FcNext />} onClick={handleNextQuestion}>
               Next
             </Button>
           </div>

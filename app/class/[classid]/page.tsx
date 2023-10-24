@@ -147,7 +147,7 @@ export default function Class() {
         </div>
       )}
 
-      <div className="flex flex-col col-span-1 text-gray-800 pt-2 pr-4 pb-4">
+      <div className="hidden md:block flex flex-col col-span-1 text-gray-800 pt-2 pr-4 pb-4">
         {socket && (
           <div>
             <ActionMenu />

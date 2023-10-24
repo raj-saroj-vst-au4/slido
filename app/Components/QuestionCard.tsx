@@ -2,12 +2,14 @@ import { Avatar, AvatarGroup, Button, Image } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { FcNext, FcPrevious } from "react-icons/fc";
 
-interface questions {
-  from: {
-    ufname: string;
-    uimage: string;
-    umailid: string;
-  };
+interface User {
+  ufname: string;
+  uimage: string;
+  umailid: string;
+}
+
+interface Question {
+  from: User;
   text: string;
   time: Date;
   msgid: string;
@@ -15,26 +17,28 @@ interface questions {
   answered: number;
 }
 
-interface questioncardProps {
+interface QuestionCardProps {
   socket: {
     on(event: string, callback: (data: any) => void): void;
     off(event: string): void;
     emit(event: string, data: any): void;
   };
-  qrecords: questions[];
+  qrecords: Question[];
   classid: string | string[];
 }
 
-const QuestionCard = ({ socket, qrecords, classid }: questioncardProps) => {
-  const [currentQuestion, setCurrentQuestion] = useState<questions>();
-  const [answeredQuestions, setAnsweredQuestions] = useState<questions[]>([]);
-  const [qCounter, setQCounter] = useState<number>(1);
+const QuestionCard = ({ socket, qrecords, classid }: QuestionCardProps) => {
+  const [currentQuestion, setCurrentQuestion] = useState<Question | undefined>(
+    undefined
+  );
+  const [answeredQuestions, setAnsweredQuestions] = useState<Question[]>([]);
+  const [qCounter, setQCounter] = useState<number>(0);
   const isOldRecordsSet = useRef(false);
 
-  const sortAnsMessages = (msgslist: questions[]) => {
+  const sortAnsMessages = (msgslist: Question[]) => {
     const sortedPrevAnswered = msgslist
       .filter((q) => q.answered)
-      .sort((a, b) => b.answered - a.answered);
+      .sort((a, b) => a.answered - b.answered);
     if (sortedPrevAnswered.length > 0) {
       setAnsweredQuestions(sortedPrevAnswered);
       setQCounter(sortedPrevAnswered[0].answered);
@@ -48,8 +52,8 @@ const QuestionCard = ({ socket, qrecords, classid }: questioncardProps) => {
     }
   }, [qrecords]);
 
-  const sortUpvotedMessages = (msgList: questions[]) => {
-    return msgList.sort((a, b) => b.upvotes.length - a.upvotes.length);
+  const sortUpvotedMessages = (msgList: Question[]) => {
+    return msgList.slice().sort((a, b) => b.upvotes.length - a.upvotes.length);
   };
 
   const handleNextQuestion = () => {
@@ -57,20 +61,27 @@ const QuestionCard = ({ socket, qrecords, classid }: questioncardProps) => {
       setCurrentQuestion(answeredQuestions[qCounter]);
       setQCounter((prev) => prev + 1);
     } else {
-      var sortedmsgs = sortUpvotedMessages(qrecords);
-      var newQuestion = sortedmsgs.find((msg) => !msg.answered);
+      const sortedmsgs = sortUpvotedMessages(qrecords);
+      const newQuestion = sortedmsgs.find((msg) => !msg.answered);
       if (newQuestion) {
         setQCounter((prev) => prev + 1);
         newQuestion.answered = qCounter;
-        setAnsweredQuestions([...answeredQuestions, newQuestion]);
+        setAnsweredQuestions((answered) =>
+          [...answered, newQuestion].sort((a, b) => a.answered - b.answered)
+        );
+
         setCurrentQuestion(newQuestion);
-        return socket.emit("flagAnswered", {
+        console.log(
+          "answered questions before taking a new one",
+          answeredQuestions
+        );
+        socket.emit("flagAnswered", {
           ansmsgid: newQuestion.msgid,
           classid,
           ansindex: qCounter,
         });
       } else {
-        return setCurrentQuestion({
+        setCurrentQuestion({
           from: {
             ufname: "Team Queryflow",
             uimage: "https://bit.ly/dan-abramov",
@@ -87,11 +98,24 @@ const QuestionCard = ({ socket, qrecords, classid }: questioncardProps) => {
   };
 
   const handlePreviousQuestion = () => {
-    if (answeredQuestions) {
+    if (answeredQuestions.length > 0) {
       const previousIndex = qCounter - 1;
       if (previousIndex >= 0 && answeredQuestions[previousIndex]) {
         setCurrentQuestion(answeredQuestions[previousIndex]);
         setQCounter(previousIndex);
+      } else if (previousIndex == -1) {
+        setCurrentQuestion({
+          from: {
+            ufname: "Team Queryflow",
+            uimage: "https://bit.ly/dan-abramov",
+            umailid: "system",
+          },
+          text: "No more older questions",
+          time: new Date(1697873422454),
+          msgid: "none",
+          upvotes: [],
+          answered: 450000,
+        });
       }
     }
   };
@@ -103,7 +127,7 @@ const QuestionCard = ({ socket, qrecords, classid }: questioncardProps) => {
           <blockquote>
             <div className="text-2xl font-medium text-white">
               {currentQuestion?.text ||
-                "Highly Upvoted Questions would appear here !"}
+                "Highly Upvoted Questions would appear here!"}
             </div>
           </blockquote>
           <div className="flex justify-between items-center">
@@ -149,4 +173,5 @@ const QuestionCard = ({ socket, qrecords, classid }: questioncardProps) => {
     </section>
   );
 };
+
 export default QuestionCard;

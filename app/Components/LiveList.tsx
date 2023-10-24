@@ -10,14 +10,32 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+type room = {
+  id: string;
+  name: string;
+  dp: string;
+  title: string;
+};
 
 interface LiveListProps {
   classid: string | string[];
-  liveRooms: [{ id: string; name: string; dp: string; title: string }] | null;
+  liveRooms: [room] | null;
 }
 
 const LiveList = ({ classid, liveRooms }: LiveListProps) => {
   const router = useRouter();
+  const [filteredRooms, setFilteredRooms] = useState<room[]>([]);
+
+  useEffect(() => {
+    if (liveRooms) {
+      const valid = liveRooms.filter((room: room) => {
+        return room && room.name != "invalid";
+      });
+      setFilteredRooms(valid);
+    }
+  }, [liveRooms]);
 
   const handleJoinSession = (id: string) => {
     router.push(`/class/${id}`);
@@ -27,8 +45,8 @@ const LiveList = ({ classid, liveRooms }: LiveListProps) => {
     <Card>
       <CardBody>
         <Stack divider={<StackDivider />} spacing="4">
-          {liveRooms && liveRooms.length > 0 ? (
-            liveRooms.map((result, index) => {
+          {filteredRooms && filteredRooms.length > 0 ? (
+            filteredRooms.map((result, index) => {
               return (
                 <Flex key={index}>
                   <Avatar src={result.dp} />
